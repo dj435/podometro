@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <title>Contador de Pasos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: white;
+            text-align: center;
+            margin-top: 10px;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        @font-face {
+            font-family: 'digital-7';
+            src: url('fonts/digital-7.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .contenedor {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 350px;
+            text-align: center;
+            display: flex;
+            justify-content: center; /* Centra el contenido horizontalmente */
+            align-items: center; /* Centra el contenido verticalmente */
+            flex-direction: column; /* Los elementos en columna */
+            height: 100vh;
+        }
+
+        h1 {
+            font-size: 40px;
+            color: white;
+            text-transform: uppercase;
+            margin-bottom: 0px;
+            margin-top: 0px;
+            border: none;
+            z-index: 2;
+        }
+
+        /* Recuadro de contador independiente */
+        #contador {
+            display: block; /* Ocupa toda la línea */
+            font-size: 50px;
+            font-family: 'digital-7', sans-serif;
+            color: yellow;
+            padding: 10px;
+            margin: 10px 0; /* Mayor margen para separar */
+            border-radius: 100%;
+            border: 2px solid red;
+            width: 120px; /* Ancho fijo */
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+        }
+
+        /* Recuadros de Distancia y Tiempo */
+        #distancia-container,
+        #tiempo-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            padding: 5px ;
+            margin: 5px 0;
+            border: 2px solid #444;
+            width: 100%;
+        }
+
+        #distancia-label,
+        #tiempo-label {
+            font-size: 25px;
+            padding: 10px 15px;
+            color: white;
+            font-family: 'Roboto', sans-serif;
+            text-transform: uppercase;
+            background-color: rgba(0, 50, 0, 0.5);
+        }
+
+        #distancia-value,
+        #tiempo-value {
+            font-size: 40px;
+            color: white;
+            padding: 10px 20px;
+            font-family: 'digital-7', sans-serif;
+            background-color: rgba(100, 100, 0, 0.7);
+        }
+
+        button {
+            font-size: 20px;
+            text-transform: uppercase;
+            color: black;
+            border: 1px solid red;
+            background-color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: #f4f4f4;
+        }
+
+        #iframe {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 60px;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="contenedor">
+
+        <iframe id="iframe" src="policia.html" title="Luces de Policía Neon" scrolling="no"></iframe>
+        <h1>Pasos</h1>
+        <div id="contador">0</div>
+        <div id="distancia-container">
+            <div id="distancia-label">Distancia</div>
+            <div id="distancia-value">0:00 km</div>
+        </div>
+        <div id="tiempo-container">
+            <div id="tiempo-label">Tiempo</div>
+            <div id="tiempo-value">00:00:00</div>
+        </div>
+        <button id="iniciarBtn" onclick="iniciarContador()">Iniciar</button>
+        <button id="detenerBtn" onclick="detenerContador()" style="display: none;">Detener</button>
+    </div>
+
+    <script>
+        let pasos = 0;
+        let umbral = 12;
+        let contando = false;
+        let ultimoPaso = 0;
+        let intervaloMinimo = 250;
+        let tiempoInicial = 0;
+        const metrosPorPaso = 0.7;
+
+        async function iniciarContador() {
+            if (window.DeviceMotionEvent && !contando) {
+                window.addEventListener('devicemotion', detectarPaso);
+                alert("Podómetro activado. Empieza a caminar.");
+                document.getElementById('iniciarBtn').style.display = 'none';
+                document.getElementById('detenerBtn').style.display = 'inline-block';
+                contando = true;
+                tiempoInicial = new Date().getTime();
+            } else {
+                alert("Tu dispositivo no es compatible con el sensor de movimiento.");
+            }
+        }
+
+        function detectarPaso(event) {
+            let aceleracion = event.accelerationIncludingGravity;
+            let fuerza = Math.sqrt(aceleracion.x ** 2 + aceleracion.y ** 2 + aceleracion.z ** 2);
+            let tiempoActual = new Date().getTime();
+
+            if (fuerza > umbral && (tiempoActual - ultimoPaso) > intervaloMinimo) {
+                pasos++;
+                ultimoPaso = tiempoActual;
+                actualizarDatos(tiempoActual);
+            }
+        }
+
+        function actualizarDatos(tiempoActual) {
+            document.getElementById('contador').textContent = pasos;
+
+            // Calcula la distancia en metros
+            let distanciaMetros = pasos * metrosPorPaso;
+            // Convierte a kilómetros
+            let distanciaKm = distanciaMetros / 1000;
+            // Separa la parte entera y el decimal (multiplicado por 100)
+            let kmEnteros = Math.floor(distanciaKm);
+            let resto = Math.round((distanciaKm - kmEnteros) * 100);
+            document.getElementById('distancia-value').textContent = `${kmEnteros}:${resto.toString().padStart(2, '0')} km`;
+
+            // Calcula el tiempo transcurrido en hh:mm:ss
+            let tiempoTranscurrido = Math.floor((tiempoActual - tiempoInicial) / 1000);
+            let horas = Math.floor(tiempoTranscurrido / 3600);
+            let minutos = Math.floor((tiempoTranscurrido % 3600) / 60);
+            let segundos = tiempoTranscurrido % 60;
+            document.getElementById('tiempo-value').textContent = `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+        }
+
+        function detenerContador() {
+            window.removeEventListener('devicemotion', detectarPaso);
+            alert("Contador detenido.");
+            document.getElementById('iniciarBtn').style.display = 'inline-block';
+            document.getElementById('detenerBtn').style.display = 'none';
+            contando = false;
+        }
+    </script>
+</body>
+
+</html>

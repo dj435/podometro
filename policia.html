@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luces de Policía Neón</title>
+    <style>
+        body {
+            background-color: black;
+            margin: 0; /* Elimina el margen del body */
+            overflow: hidden; /* Evita el scroll */
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            gap: 30px; /* Espacio entre los círculos */
+        }
+
+        .rectangle {
+            width: 120px;
+            height: 50px;
+            border-radius: none;
+            background-color: transparent;
+            transition: background-color 0.05s, box-shadow 0.05s;
+        }
+
+        .rectangle-blue.active {
+            background-color: blue;
+            box-shadow: 0 0 60px blue, 0 0 100px blue, 0 0 140px blue;
+            border: 1px solid RoyalBlue;
+
+        }
+
+        .rectangle-red.active {
+            background-color: red;
+            box-shadow: 0 0 60px red, 0 0 100px red, 0 0 140px red;
+            border: 1px solid OrangeRed;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="blue" class="rectangle rectangle-blue"></div>
+        <div id="red" class="rectangle rectangle-red"></div>
+    </div>
+
+    <script>
+        const blueLight = document.getElementById('blue');
+        const redLight = document.getElementById('red');
+
+        function policeLights() {
+            let count = 0;
+
+            function flash(colorElement, nextFunction) {
+                if (count < 8) {
+                    colorElement.classList.toggle('active');
+                    count++;
+                    setTimeout(() => flash(colorElement, nextFunction), 40);
+                } else {
+                    count = 0;
+                    setTimeout(nextFunction, 200);
+                }
+            }
+
+            function startBlue() {
+                flash(blueLight, startRed);
+            }
+
+            function startRed() {
+                flash(redLight, startBlue);
+            }
+
+            startBlue();
+        }
+
+        policeLights();
+    </script>
+</body>
+
+</html>
