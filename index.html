@@ -3,6 +3,7 @@
 
 <head>
     <title>Contador de Pasos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,14 +30,13 @@
             background-color: rgba(0, 0, 0, 0.7);
             padding: 20px;
             border-radius: 15px;
-            width: 80%;
+            width: 90%;
             max-width: 350px;
             text-align: center;
             display: flex;
-            justify-content: center; /* Centra el contenido horizontalmente */
-            align-items: center; /* Centra el contenido verticalmente */
-            flex-direction: column; /* Los elementos en columna */
-            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
         h1 {
@@ -49,17 +49,16 @@
             z-index: 2;
         }
 
-        /* Recuadro de contador independiente */
         #contador {
-            display: block; /* Ocupa toda la línea */
+            display: block;
             font-size: 50px;
             font-family: 'digital-7', sans-serif;
             color: yellow;
             padding: 10px;
-            margin: 10px 0; /* Mayor margen para separar */
+            margin: 10px 0;
             border-radius: 100%;
             border: 2px solid red;
-            width: 120px; /* Ancho fijo */
+            width: 120px;
             height: 120px;
             display: flex;
             justify-content: center;
@@ -67,14 +66,13 @@
             z-index: 3;
         }
 
-        /* Recuadros de Distancia y Tiempo */
         #distancia-container,
         #tiempo-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-radius: 10px;
-            padding: 5px ;
+            padding: 5px;
             margin: 5px 0;
             border: 2px solid #444;
             width: 100%;
@@ -114,22 +112,11 @@
         button:hover {
             background-color: #f4f4f4;
         }
-
-        #iframe {
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 60px;
-            border: none;
-        }
     </style>
 </head>
 
 <body>
     <div class="contenedor">
-
-        <iframe id="iframe" src="policia.html" title="Luces de Policía Neon" scrolling="no"></iframe>
         <h1>Pasos</h1>
         <div id="contador">0</div>
         <div id="distancia-container">
@@ -181,16 +168,12 @@
         function actualizarDatos(tiempoActual) {
             document.getElementById('contador').textContent = pasos;
 
-            // Calcula la distancia en metros
             let distanciaMetros = pasos * metrosPorPaso;
-            // Convierte a kilómetros
             let distanciaKm = distanciaMetros / 1000;
-            // Separa la parte entera y el decimal (multiplicado por 100)
             let kmEnteros = Math.floor(distanciaKm);
             let resto = Math.round((distanciaKm - kmEnteros) * 100);
             document.getElementById('distancia-value').textContent = `${kmEnteros}:${resto.toString().padStart(2, '0')} km`;
 
-            // Calcula el tiempo transcurrido en hh:mm:ss
             let tiempoTranscurrido = Math.floor((tiempoActual - tiempoInicial) / 1000);
             let horas = Math.floor(tiempoTranscurrido / 3600);
             let minutos = Math.floor((tiempoTranscurrido % 3600) / 60);
