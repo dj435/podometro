@@ -197,6 +197,22 @@
             document.getElementById('iniciarBtn').style.display = 'inline-block';
             document.getElementById('detenerBtn').style.display = 'none';
             contando = false;
+            
+        if (wakeLock) {
+                wakeLock.release();
+                wakeLock = null;
+                console.log("Wake Lock liberado");
+            }
+        }
+
+        if (typeof window.screen !== 'undefined') {
+            window.addEventListener('load', function() {
+                if ('wakeLock' in navigator) {
+                    console.log('Wake Lock API disponible');
+                } else {
+                    console.log('Wake Lock API no disponible en este dispositivo.');
+                }
+            });
         }
     </script>
 </body>
